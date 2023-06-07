@@ -1,0 +1,83 @@
+﻿@model IEnumerable<kinhdoanhbanh.Models.SanPham>
+
+    @{
+        ViewBag.Title = "SanPhamDaXoa";
+        Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>Sản Phẩm Đã Xóa</h2>
+
+
+    <table class="table">
+        <tr>
+            <th>
+                Tên Sản Phẩm
+            </th>
+            <th>
+                Đơn Vị Tính
+            </th>
+            <th>
+                Số lượng
+            </th>
+            @*<th>
+                Đơn giá nhập
+            </th>*@
+            <th>
+                Mô Tả
+            </th>
+            <th>
+                Hình Ảnh
+            </th>
+            <th>
+                Đơn Giá Bán
+            </th>
+            <th>
+                Loại
+            </th>
+
+            @*<th>
+                Nhà Cung Cấp
+            </th>*@
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenSP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DVT)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLuong)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.DonGiaNhap)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.MoTa)
+                </td>
+                <td>
+                    <img src="../../Content/Images/@item.HinhAnh" style="width:100px;height:100px" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DonGiaBan)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Loai.TenLoai)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.NhaCungCap.TenNCC)
+                </td>*@
+                <td>
+                    <div class="btn btn-warning">
+                        <a href="@Url.Action("HoanTac", new {MaSp=item.MaSP})" onclick="return confirm('Bạn có chắc muốn Hoàn Tác?')"><i class="bi bi-arrow-clockwise"></i>Hoàn Tác</a>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>

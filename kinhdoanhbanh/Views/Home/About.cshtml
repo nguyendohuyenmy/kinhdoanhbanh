@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+
+
+<div class="container">
+
+
+
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2 text-center">
+            <div class="section-title">
+                <br />
+                <h3><span class="orange-text">TOP 3 </span>Sản Phẩm Bán Chạy</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var item in (ViewBag.TopBanChay as List<kinhdoanhbanh.Models.SanPham>))
+        {
+            <div class="col-lg-4 col-md-6 text-center">
+                <div class="single-product-item">
+                    <div class="product-image">
+                        <a href="@Url.Action("Details","Home",new { id = item.MaSP })"><img src="~/Content/Images/@item.HinhAnh" height="200" alt=""></a>
+                    </div>
+                    <h3>@item.TenSP</h3>
+                    <p class="product-price"><span>Giá / @item.DVT </span> @(item.DonGiaBan == null ? "0" : item.DonGiaBan.Value.ToString("#,###") )<span style="color:black">vnđ</span> </p>
+                    <a href="@Url.Action("AddToCart","GioHang",new {maSP = item.MaSP , soluong = 1 })" class="cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>

@@ -1,0 +1,300 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var ds = ViewBag.DanhSach;
+
+
+    int Tongtientam = 0;
+    int TongSoluong = 0;
+    if (ds != null)
+    {
+        foreach (var i in ds)
+        {
+            Tongtientam += i.ThanhTien;
+            TongSoluong += i.SoLuong;
+        }
+
+    }
+
+}
+
+
+@if (ViewBag.alert != null)
+{
+    <script type="text/javascript">
+                window.onload = function () {
+                    alert("@ViewBag.alert");
+            };
+
+    </script>
+
+}
+
+
+<h2></h2>
+
+@if (ds == null)
+{
+    <h3 class="text-info text-center">
+        <div class="alert alert-info" style="color:red ; bold" role="alert">
+            Chưa có sản phẩm trong giỏ hàng
+        </div>
+    </h3>
+}
+else
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>
+                            Mã Hàng
+                        </th>
+                        <th>
+                            Tên Hàng
+                        </th>
+                        <th>
+                            Số Lượng
+                        </th>
+                        <th>
+                            Đơn Giá
+                        </th>
+                        <th>
+                            Thành Tiền
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+                    @{
+                        var sl = 0;
+                        var tongTien = 0;
+                    }
+                    @foreach (var item in ds)
+                    {
+
+                        <tr>
+                            <td class="text-center" name="MaSP">@item.MaSP</td>
+                            <td> <a href="@Url.Action("Details","Home",new {id= item.MaSP })">@item.TenSP</a></td>
+                            <td>
+
+                                <input type="hidden" name="txtMaSP" value="@item.MaSP" />
+                                <input type="number" onchange="funUpdate()" style="background-color: #33333370; font-size: larger; " min="1" name="txtSoLuong" value="@item.SoLuong" />
+
+
+                            </td>
+                            <td>@item.DonGia.ToString() VNd</td>
+                            <td>@item.ThanhTien.ToString() VNd</td>
+                            <td>
+                                <a href="@Url.Action("DelCartItem",new { MaSP = item.MaSP })" onclick="return confirm('Xóa Sản Phẩm Này ?');" class="btn btn-danger btn-sm">Xóa</a>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td class="text-right">Tông Số Lượng</td>
+                        <td>@TongSoluong</td>
+                        <td class="text-right">Tổng Thành Tiền</td>
+                        <td>@Tongtientam VNĐ</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+
+                            <form action="@Url.Action("Order", "Giohang",new { @ViewBag.toEmail})" method="get">
+
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <p style="font-weight:bold;text-align:center">Thông tin Đặt Hàng</p>
+
+                                        <!--Thong tin Dien Thoai Email Dat Hang-->
+                                        <div class="row">
+                                            <div class="col-lg-6    d-flex justify-content-end">
+                                                <a>Email :</a>
+                                                <input type="email" value="@ViewBag.toEmail" name="Email" />
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <a>Điện Thoại:</a>
+                                                <input type="text" name="phone" />
+                                            </div>
+
+                                        </div>
+
+                                        <br />
+
+                                        <!-- Dia Chi Dat Hang-->
+
+                                        <div class="row">
+
+
+                                            <div class="col-lg-6    d-flex justify-content-end">
+                                                <a>Nhập địa chỉ:</a>
+                                                <input type="text" value="" name="DiaChiDatHangChiTiet" required>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <select name="calc_shipping_provinces" required="">
+                                                    <option value="">Tỉnh / Thành phố</option>
+                                                </select>
+                                                <br />
+                                                <select name="calc_shipping_district" required="">
+                                                    <option value="">Quận / Huyện</option>
+                                                </select>
+                                                <input class="billing_address_1" name="" type="hidden" value="">
+                                                <input class="billing_address_2" name="" type="hidden" value="">
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <a><input type="submit" value="Đặt Hàng" class="btn btn-success btn-sm" /></a>
+                                        <br />
+                                        <br />
+                                        <a><input type="button" id="ThanhToanMomo" onclick="funThanhToanMoMo()" value="Thanh Toán Thông Qua MoMo" style="color:darkmagenta" /><i class="fa-solid fa-memo"></i></a>
+                                        <br />
+                                        <br />
+                                        <a class="btn btn-success btn-group-lg" href="@Url.Action("Index","Home")">
+                                            Tiếp Tục Mua Hàng
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+<!-- #region Scripts  tích hợp bộ lọc select chọn nhanh Tỉnh, Thành & Quận, Huyện -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/gh/vietblogdao/js/districts.min.js'></script>
+<script>
+    //<![CDATA[
+    if (address_2 = localStorage.getItem('address_2_saved')) {
+        $('select[name="calc_shipping_district"] option').each(function () {
+            if ($(this).text() == address_2) {
+                $(this).attr('selected', '')
+            }
+        })
+        $('input.billing_address_2').attr('value', address_2)
+    }
+    if (district = localStorage.getItem('district')) {
+        $('select[name="calc_shipping_district"]').html(district)
+        $('select[name="calc_shipping_district"]').on('change', function () {
+            var target = $(this).children('option:selected')
+            target.attr('selected', '')
+            $('select[name="calc_shipping_district"] option').not(target).removeAttr('selected')
+            address_2 = target.text()
+            $('input.billing_address_2').attr('value', address_2)
+            district = $('select[name="calc_shipping_district"]').html()
+            localStorage.setItem('district', district)
+            localStorage.setItem('address_2_saved', address_2)
+        })
+    }
+    $('select[name="calc_shipping_provinces"]').each(function () {
+        var $this = $(this),
+            stc = ''
+        c.forEach(function (i, e) {
+            e += +1
+            stc += '<option value=' + e + '>' + i + '</option>'
+            $this.html('<option value="">Tỉnh / Thành phố</option>' + stc)
+            if (address_1 = localStorage.getItem('address_1_saved')) {
+                $('select[name="calc_shipping_provinces"] option').each(function () {
+                    if ($(this).text() == address_1) {
+                        $(this).attr('selected', '')
+                    }
+                })
+                $('input.billing_address_1').attr('value', address_1)
+            }
+            $this.on('change', function (i) {
+                i = $this.children('option:selected').index() - 1
+                var str = '',
+                    r = $this.val()
+                if (r != '') {
+                    arr[i].forEach(function (el) {
+                        str += '<option value="' + el + '">' + el + '</option>'
+                        $('select[name="calc_shipping_district"]').html('<option value="">Quận / Huyện</option>' + str)
+                    })
+                    var address_1 = $this.children('option:selected').text()
+                    var district = $('select[name="calc_shipping_district"]').html()
+                    localStorage.setItem('address_1_saved', address_1)
+                    localStorage.setItem('district', district)
+                    $('select[name="calc_shipping_district"]').on('change', function () {
+                        var target = $(this).children('option:selected')
+                        target.attr('selected', '')
+                        $('select[name="calc_shipping_district"] option').not(target).removeAttr('selected')
+                        var address_2 = target.text()
+                        $('input.billing_address_2').attr('value', address_2)
+                        district = $('select[name="calc_shipping_district"]').html()
+                        localStorage.setItem('district', district)
+                        localStorage.setItem('address_2_saved', address_2)
+                    })
+                } else {
+                    $('select[name="calc_shipping_district"]').html('<option value="">Quận / Huyện</option>')
+                    district = $('select[name="calc_shipping_district"]').html()
+                    localStorage.setItem('district', district)
+                    localStorage.removeItem('address_1_saved', address_1)
+                }
+            })
+        })
+    })
+    //]]></script>
+
+<!-- #endregion -->
+
+
+<script>
+    //Suu kien Cap Nhat So Luong San Pham GioHang
+    function funUpdate()
+    {
+        let MaSP = $('[name=txtMaSP]').val();
+        let txtSoLuong = $('[name=txtSoLuong]').val();
+        mode = "get";
+        debugger;
+        var url = '@Html.Raw(Url.Action("Update", "GioHang", new { MaSP = "__MaSP__", txtSoLuong = "__txtSoLuong__" }))';
+        var params = url.replace('__MaSP__', MaSP).replace('__txtSoLuong__', txtSoLuong);
+        window.location.href = params;
+    }
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+    });
+
+
+    //Su Kien Click Button Thanh Toan Bang MoMo
+    function funThanhToanMoMo()
+    {
+        let Email = $('[name=Email]').val();
+        let DiaChiDatHangChiTiet = $('[name=DiaChiDatHangChiTiet]').val();
+        let calc_shipping_provinces = $('[name=calc_shipping_provinces]').val();
+        let calc_shipping_district = $('[name=calc_shipping_district]').val();
+
+        //validate du lieu
+        if (Email == '' || DiaChiDatHangChiTiet == '' || calc_shipping_district == '' || calc_shipping_provinces == '') {
+            alert("Vui lòng nhập thông tin địa chỉ và email đặt hàng");
+            return;
+        }
+
+        mode = "get";
+        debugger;
+        var url = '@Html.Raw(Url.Action("MomoPayment", "GioHang", new { Email = "__Email__", DiaChiDatHangChiTiet = "__DiaChiDatHangChiTiet__", calc_shipping_provinces = "__calc_shipping_provinces__", calc_shipping_district = "__calc_shipping_district__" }))';
+        var params = url.replace('__Email__', Email).replace('__DiaChiDatHangChiTiet__', DiaChiDatHangChiTiet).replace('__calc_shipping_provinces__', calc_shipping_provinces).replace('__calc_shipping_district__', calc_shipping_district);
+        window.location.href = params;
+    }
+
+</script>
+

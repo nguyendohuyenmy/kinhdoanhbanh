@@ -1,0 +1,18 @@
+﻿<li>
+    <a href="#">Danh Mục</a>
+    <ul class="sub-menu">
+
+
+
+        @if (ViewBag.DanhMucHome != null)
+        {
+            foreach (var item in ViewBag.DanhMucHome)
+            {
+                <li><a href="@Url.Action("Index","Home", new { filterLoai = item.MaLoai})">@item.TenLoai</a></li>
+            }
+
+        }
+
+
+    </ul>
+</li>

@@ -1,0 +1,81 @@
+﻿@model kinhdoanhbanh.Models.KhachHang
+
+@{
+    ViewBag.Title = "CapNhatThongTinTaiKhoan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Cập Nhật Thông Tin Tài Khoản</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Cập Nhật Thông Tin Tài Khoản</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.MaKH)
+
+        <div class="form-group">
+            <a>Họ Tên :</a>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TenKH, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TenKH, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <a>Địa Chỉ :</a>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DiaChi, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DiaChi, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SDT, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SDT, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SDT, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2"> Email</label>
+            <div class="col-md-10">
+                <input type="text" name="Email" value="@Model.Email" class="form-control" />
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <p class="text-warning">Nếu không thay đổi mật khẩu xin hãy để trống</p>
+        <div class="form-group">
+            Nhập Mật Khẩu Cũ
+            <div class="col-md-10">
+                <input type="password" name="MatKhauCu" style="width:100%" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            Mật Khẩu Mới
+            <div class="col-md-10">
+                <input type="password" name="MatKhauMoi" minlength="8" style="width:100%" />
+            </div>
+        </div>
+        <div class="form-group">
+            Xác Nhận Mật Khẩu Mới
+            <div class="col-md-10">
+                <input type="password" name="XacNhanMatKhauMoi" minlength="8" style="width:100%" />
+            </div>
+        </div>
+
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+

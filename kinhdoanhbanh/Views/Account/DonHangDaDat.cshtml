@@ -1,0 +1,67 @@
+﻿@model IEnumerable<kinhdoanhbanh.Models.HoaDon>
+
+@{
+    ViewBag.Title = "DonHangDaDat";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Đơn Hàng Đã Đặt </h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            Ngày Đặt Hàng
+        </th>
+        <th>
+            Hình Thức Thanh Toán
+        </th>
+        <th>
+            Tổng Tiền
+        </th>
+
+
+        <th>
+            Số Lượng Sản Phẩm
+        </th>
+        <th>
+            Địa Chỉ Nhận Hàng
+        </th>
+        <th>
+            Trạng Thái Đơn Hàng
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NgayXuatHD)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HinhThucThanhToan)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TongTien)
+            </td>
+
+
+            <td>
+                @Html.DisplayFor(modelItem => item.SoLuong)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiaChiGiaoHang)
+            </td>
+            <td>
+                @{ var mauTrangThai = item.Note == "Giao hàng thành công" ? "lawngreen" : "yellow";}
+                <div style="background-color:@mauTrangThai"> @item.Note </div>
+                @*@Html.DisplayFor(modelItem => item.status)*@
+            </td>
+
+            <td>
+            </td>
+        </tr>
+    }
+
+</table>

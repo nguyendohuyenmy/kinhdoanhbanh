@@ -1,0 +1,185 @@
+﻿@model IEnumerable<kinhdoanhbanh.Models.HoaDon>
+
+    @{
+        Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+        ViewBag.Title = "Hóa Đơn Bán Hang";
+    }
+
+    <h2 style="color:navajowhite">Danh Mục Hóa Đơn</h2>
+
+
+    <!--modal chi hien thi form khi nguoi dung goi modal-->
+
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modalHoaDon">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="panel panel-primary bg-primary text-white">
+                    <h4 class="panel-heading text-center" id="modalTitle">  </h4>
+                    <div class="panel-body">
+
+                        <div class="form-group" style="margin:20px">
+                            <input type="hidden" id="MaHD" value="" />
+
+                            <h4>Cập Nhật Tình Trạng Đơn Hàng</h4>
+                            <select class="form-control" id="status" required>
+                                <option value="Chờ xử lý">Chờ xử lý</option>
+                                <option value="Đang giao hàng">Đang giao hàng</option>
+                                <option value="Giao hàng thành công">Giao hàng thành công </option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnSubmit">Xác Nhận</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table">
+        <tr>
+            <th>
+                Mã HĐ
+            </th>
+            <th>
+                Ngày lập HD
+            </th>
+            <th>
+                Hình thức thanh toán
+            </th>
+            <th>
+                Tên Khách Hàng
+            </th>
+            <th>
+                Nhân Viên Bán Hàng
+            </th>
+            <th>
+                Tổng Tiền
+            </th>
+            <th>
+                Địa Chỉ Giao Hàng
+            </th>
+
+
+
+            <!-- chua xu li-->
+            <th>
+                Tình Trạng Đơn Hàng
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr id="@item.MaHD">
+                <td>
+                    <a href="@Url.Action("Index","CTHDs", new {MaHD = item.MaHD })">
+                        @Html.DisplayFor(ModelItem => item.MaHD)
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NgayXuatHD)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HinhThucThanhToan)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.KhachHang.TenKH)
+                </td>
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.NhanVien.HoTen)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TongTien)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DiaChiGiaoHang)
+                </td>
+
+
+
+                <td>
+                    @{ var mauTrangThai = item.Note == "Giao hàng thành công" ? "lawngreen" : "yellow";}
+                    <div style="color:@mauTrangThai"> @item.Note </div>
+
+                </td>
+                <td>
+                    <a class="btn-m btn-success btn-circle  edit" href="#" data-toggle="modal" data-target="#modalHoaDon"><i class="fas fa-edit"></i></a>
+                    <br />
+                    <br />
+                    <a href=" @Url.Action("Details", "HoaDon", new { id = item.MaHD })" class="btn-m btn-info btn-circle"><i class="fas fa-info-circle"></i></a>
+                </td>
+            </tr>
+        }
+
+    </table>
+
+
+
+    @section Scripts{
+        <script>
+
+        $(document).ready(function () {
+            $(document).load("Content-Type:application/json; charset=UTF-8");
+
+
+        })
+
+        //su kien click button edit
+        $(document).on('click', '.edit', function () {
+            //get element id in row table
+            let MaHD = $(this).closest('tr').attr('id'); // this:nut dang click , closest: lay cha la <tr> , attr:thuoc tinh can lay
+
+            $.ajax({
+                //dung lai ham detail de lay request du lieu do len modal
+                url: '/Admin/HoaDon/LayThongTinByID',
+                type: 'get',
+                data: { id: MaHD },
+                success: function (res) {
+                    if (res.trangthai == 0) {
+
+
+                        $('#MaHD').val(MaHD); // truyen id Hoa don len modal
+
+                        $('#status').val(res.data.Note);
+                    }
+                }
+            })
+        });
+
+        //su kien click cua button submit
+        $("#btnSubmit").click(function () {
+            let TinhTrangDonHang = $('#status').val().trim();
+
+            let MaHD = $('#MaHD').val().trim();
+
+            //dung ajax de cap nhat
+            $.ajax({
+                url: '/admin/HoaDon/UpdateStatus',
+                type: 'post',
+                data: {
+                    MaHD: MaHD,
+                    Note: TinhTrangDonHang
+                },
+                success: function (data) {
+                    if (data.trangthai == 0) {
+                        alert(data.msg);
+                        $('#modalHoaDon').modal('hide');
+
+                        location.reload();//load lai sau khi cap nhat
+                    }
+                    else {
+                        alert(data.msg);
+                    }
+                }
+
+            })
+        })
+
+        </script>
+
+    }

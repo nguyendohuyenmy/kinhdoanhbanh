@@ -1,0 +1,332 @@
+﻿
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+<p>
+    <a href="#" id="btnAdd" class="btn btn-success btn-icon-split" data-toggle="modal" data-target="#modalSP">
+        <span class="icon text-white-50">
+            <i class="fas fa-plus"></i>
+        </span>
+        <span class="text">Thêm Mới</span>
+    </a>
+    <a href="@Url.Action("SanPhamDaXoa")" class="btn btn-danger btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fa-solid fa-trash"></i>
+        </span>
+        <span class="text">Sản Phẩm Đã Xóa</span>
+    </a>
+</p>
+
+<nav aria-label="...">
+    <ul class="pagination pagination-sm" id="phanTrang">
+    </ul>
+</nav>
+
+<table class="table">
+    <tr>
+        <th>
+            Tên Sản Phẩm
+        </th>
+        <th>
+            Ảnh sản phẩm
+        </th>
+
+        <th>
+            Đơn vị tính
+        </th>
+        <th>
+            Số lượng còn lại
+        </th>
+        @*<th>
+            Đơn giá nhập
+        </th>*@
+        <th>
+            Đơn giá bán
+        </th>
+       
+        <th>
+            Danh Mục
+        </th>
+
+        <th></th>
+    </tr>
+
+    <tbody id="tblDsSanPham"> </tbody>
+
+
+
+</table>
+
+
+
+
+
+
+<!--modal chi hien thi form khi nguoi dung goi modal-->
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modalSP">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="panel panel-primary bg-primary text-white">
+                <h4 class="panel-heading text-center" id="modalTitle">  </h4>
+                <div class="panel-body">
+
+                    <div class="form-group" style="margin:20px">
+                        <input type="hidden" id="MaSP" value="" />
+                        <label>Tên Sản Phẩm</label>
+                        <input type="text" class="form-control" id="TenSP" placeholder="Tên Sản Phẩm">
+                        <label>Hình Ảnh</label>
+                        <input type="file" class="form-control" id="HinhAnhSP" accept="image/*">
+                        <label>Đơn vị tính </label>
+                        <input type="text" class="form-control" id="DVT" placeholder="Đơn vị tính">
+                        <label>Số lượng sản phẩm</label>
+                        <input type="text" class="form-control" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" id="SoLuongSP" placeholder="Số lượng Sản Phẩm">
+                        @*<label>Đơn giá nhập</label>
+                        <input type="text" class="form-control" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" id="DonGiaNhap" placeholder="Đơn giá nhập">*@
+                        <label>Đơn giá bán</label>
+                        <input type="text" class="form-control" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" id="DonGiaBan" placeholder="Đơn giá bán">
+                        @*<label>Nhà Cung Cấp</label>
+                        <select class="form-group" style="width:100%" id="selectNCC">
+                        </select>*@
+                        <label>Loại Sản Phẩm</label>
+                        <select class="form-group" style="width:100%" id="selectLoai"
+                        </select>
+                        <label>Mô tả sản phẩm</label>
+                        <input type="text" class="form-control" id="MoTa" placeholder="Mô tả sản phẩm">
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSubmit">Xác Nhận</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            loadDsSanPham();
+        })
+
+
+        function loadDsSanPham(trang) {
+            // dung ajax de load ds san pham len table body
+
+            $.ajax({
+                url: "/Admin/SanPham/DsSanPham",
+                type: "Get",
+                data: {
+                    trang:trang
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (data.trangthai) { //lay thanh cong
+
+                        let tr = "";
+                        console.log(data.dsSanPham)
+                        $.each(data.dsSanPham   , function (k,v) {
+                            tr += '<tr id="' + v.MaSP + '">';
+                            tr += '<td>' + v.TenSP + '</td>';
+                            tr += '<td> <img src="../Content/Images/' + v.HinhAnh + '" style="width:100px;height:100px" /></td>';
+                            tr += '<td>' + v.DVT + '</td>';
+                            tr += '<td>' + v.SoLuong + '</td>';
+                            //tr += '<td>' + v.DonGiaNhap + '</td>';
+                            tr += '<td>' + v.DonGiaBan + '</td>';
+                            //tr += '<td>' + v.NhaCungCap.TenNCC + '</td>';
+                            tr += '<td>' + v.Loai.TenLoai + '</td>';
+                            tr += '<td class="text-right">';
+                            tr += '<a class="btn btn-success btn-circle   edit" data-toggle="modal" data-target="#modalSP" href="#"><i class="fas fa-edit"></i></a> |'
+                            //tr += '<a href="#" class="btn btn-info btn-circle    details" data-toggle="modal" data-target="#modalLoaiSP"><i class="fas fa-info-circle"></i></a> |'
+                            tr += '<a href="#" class="btn btn-danger btn-circle   delete"><i class="fas fa-trash"></i></a>'
+                            tr += '</td>';
+                            tr += '</tr >';
+                        });
+                        $("#tblDsSanPham").html(tr);
+
+                        //$('#selectNCC').html('');
+
+                        //$.each(data.selectListNCC, function (k,v) {
+                        //    let option = '<option value="'+v.MaNCC+'" >' + v.TenNCC + '</option>';
+                        //    $('#selectNCC').append(option);
+                        //})
+
+                        $('#selectLoai').html('');
+
+                        $.each(data.selectListLoai, function (k, v) {
+                            let option = '<option value="' + v.MaLoai + '" >' + v.TenLoai + '</option>';
+                            $('#selectLoai').append(option);
+                        })
+
+                        //phan trang
+                        if (data.soTrang > 1) {
+                            let li = '';
+                            for (i = 1; i <= data.soTrang; i++) {
+
+                                li += '<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>';
+                            }
+                            $('#phanTrang').html(li);
+
+                        }
+                    }
+                }
+            })
+
+
+        }
+
+        //Nut Them Moi
+        $("#btnAdd").click(function () {
+            $("#modalTitle").text('Thêm Mới');
+            $('#MaSP').val(''); // truyen id de biet khi nao dung button submit lam button chinh sua
+
+        })
+
+        //su kien click cua phan trang
+        $('#phanTrang').on('click', 'li', function (e) {
+            e.preventDefault(); // huy href
+            var trang = parseInt($(this).text());
+            loadDsSanPham(trang);
+        });
+
+        //su kien click cua button submit
+        $("#btnSubmit").click(function () {
+
+            let tenSP = $('#TenSP').val().trim();
+            //var HinhAnh = $('#HinhAnhSP').prop('files');
+            let DVT = $('#DVT').val().trim();
+            let SoLuongSP = $('#SoLuongSP').val().trim();
+            //let DonGiaNhap = $('#DonGiaNhap').val().trim();
+            let DonGiaBan = $('#DonGiaBan').val().trim();
+            //let idNCC = $('#selectNCC').val();
+            let idLoai = $('#selectLoai').val();
+
+            let MoTa = $('#MoTa').val().trim();
+            let HinhAnh = document.getElementById("HinhAnhSP").files[0];
+
+            if (tenSP.length == 0 || DVT.length == 0 || SoLuongSP.length == 0 || DonGiaBan.length == 0 || /*DonGiaNhap.length == 0 ||*/ /*idNCC.length == 0 ||*/ idLoai.length==0) {
+                alert('Dữ liệu không được để trống !');
+                return;
+            }
+
+
+
+            let idSP = $('#MaSP').val().trim();
+
+
+            //dung ajax de cap nhat hoac them moi
+            $.ajax({
+                url: "/Admin/SanPham/CreateUpdate",
+                type: "POST",
+                data: function () {
+                    var data = new FormData();
+                    data.append("MaSp", idSP); // truyen id de xac dinh cap nhat neu id == "" se la TH them moi
+
+                    data.append("tenSP", tenSP);
+                    data.append("HinhAnh", HinhAnh);
+                    data.append("DVT", DVT);
+                    data.append("SoLuongSP", SoLuongSP);
+                    //data.append("DonGiaNhap", DonGiaNhap);
+                    data.append("DonGiaBan", DonGiaBan);
+                    //data.append("idNCC", idNCC);
+                    data.append("idLoai", idLoai);
+
+                    data.append("MoTa", MoTa);
+
+                    return data;
+                }(),
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data.trangthai == 0) {
+                        alert(data.msg);
+                        loadDsSanPham(); // load lai trang sau khi them moi hoac cap nhat du lieu
+                        $('#modalSP').modal('hide');
+                        location.reload();
+
+                    }
+                    else {
+                        alert(data.msg);
+                    }
+                }
+
+            })
+        })
+
+
+        //su kien click button delete
+        $(document).on('click', '.delete', function () {
+            //get element id in row table
+            let MaSP = $(this).closest('tr').attr('id'); // this:nut dang click , closest: lay cha la <tr> , attr:thuoc tinh can lay
+
+            if (confirm("Bạn có chắc chắn muốn xóa ??")) {
+                //dung ajax de xoa
+                $.ajax({
+                    url: '/admin/SanPham/Delete',
+                    type: 'post',
+                    data: {
+                        id: MaSP
+                    },
+                    success: function (data) {
+                        if (data.trangthai == 0) {
+                            alert(data.msg);
+                            loadDsSanPham(); // load lai trang sau khi cap nhat
+                        }
+                        else {
+                            alert(data.msg);
+                        }
+                    }
+
+                })
+            }
+
+
+
+        });
+
+
+        //su kien click button edit
+        $(document).on('click', '.edit', function () {
+            //get element id in row table
+            let MaSP = $(this).closest('tr').attr('id'); // this:nut dang click , closest: lay cha la <tr> , attr:thuoc tinh can lay
+
+            $.ajax({
+                url: '/Admin/SanPham/GetById',
+                type: 'get',
+                data: { id: MaSP },
+                success: function (res) {
+                    if (res.trangthai == 0) {
+
+                        $("#modalTitle").text('Chỉnh Sửa');
+                        ////show thong tin len modal
+                        $('#MaSP').val(res.data.MaSP); // truyen id de biet khi nao dung button submit lam button chinh sua
+
+                        $('#TenSP').val(res.data.tenSP);
+                        $('#DVT').val(res.data.DVT);
+                        $('#SoLuongSP').val(res.data.SoLuong);
+                        //$('#DonGiaNhap').val(res.data.DonGiaNhap);
+                        $('#DonGiaBan').val(res.data.DonGiaBan);
+                        //$('#selectNCC').val(res.data.MaNCC);
+                        $('#MoTa').val(res.data.MoTa);
+                        $('#idLoai').val(res.data.idLoai); 
+
+
+                    }
+                }
+            })
+        });
+    </script>
+
+}

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<kinhdoanhbanh.Models.Loai>
+
+    @{
+        ViewBag.Title = "LoaiSPDaXoa";
+        Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>Loại Sản Phẩm Đã Xóa</h2>
+
+
+    <table class="table">
+        <tr>
+            <th>
+                Tên Loại
+            </th>
+
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenLoai)
+                </td>
+
+                <td>
+                    <div class="btn btn-warning">
+                        <a href="@Url.Action("HoanTac", new {MaLoai=item.MaLoai})" onclick="return confirm('Bạn có chắc muốn Hoàn Tác?')"><i class="bi bi-arrow-clockwise"></i>Hoàn Tác</a>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>

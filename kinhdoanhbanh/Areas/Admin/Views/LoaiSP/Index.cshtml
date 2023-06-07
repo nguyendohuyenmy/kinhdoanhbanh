@@ -1,0 +1,306 @@
+﻿
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<p>
+    <a id="btnAdd" class="btn btn-success btn-icon-split" data-toggle="modal" data-target="#modalLoaiSP">
+        <span class="icon text-white-50">
+            <i class="fas fa-plus"></i>
+        </span>
+        <span class="text">Thêm Mới</span>
+    </a>
+    <a href="@Url.Action("LoaiSPDaXoa")" class="btn btn-danger btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fa-solid fa-trash"></i>
+        </span>
+        <span class="text">Danh Mục Sản Phẩm Đã Xóa</span>
+    </a>
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            Tên Loại
+        </th>
+        <th></th>
+    </tr>
+    <tbody id="tblDsLoai">
+    </tbody>
+
+    @*@foreach (var item in Model)
+        {
+            <tr id="@item.MaLoai">
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenLoai)
+                </td>
+                <td class="text-right">
+                    <a class="btn btn-success btn-circle   edit" data-toggle="modal" data-target="#modalLoaiSP" href="#"><i class="fas fa-edit"></i></a> |
+                    <a href="#" class="btn btn-info btn-circle    details" data-toggle="modal" data-target="#modalLoaiSP"><i class="fas fa-info-circle"></i></a> |
+                    <a href="#" class="btn btn-danger btn-circle   delete"><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+        }*@
+
+
+    <!--phan trang-->
+    <nav aria-label="...">
+        <ul class="pagination pagination-sm" id="phanTrang">
+        </ul>
+    </nav>
+
+</table>
+
+
+<!--modal chi hien thi form khi nguoi dung goi modal-->
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modalLoaiSP">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="panel panel-primary bg-primary text-white">
+                <h4 class="panel-heading text-center" id="modalTitle">  </h4>
+                <div class="panel-body">
+
+                    <div class="form-group" style="margin:20px">
+                        <input type="hidden" id="MaLoaiSP" value="" />
+                        <label>Tên Loại Sản Phẩm</label>
+                        <input type="text" class="form-control" id="TenLoaiSP" placeholder="Tên Loại Sản Phẩm">
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSubmit">Xác Nhận</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+
+    <script>
+
+
+        $(document).ready(function () {
+            $(document).load("Content-Type:application/json; charset=UTF-8");
+
+            LoadDs();
+
+        })
+
+        function LoadDs(trang) {
+            $.ajax({
+                url: '/admin/LoaiSP/LoadDs',
+                type: 'get',
+                data: {
+                    trang: trang
+                },
+                success: function (res) {
+                    if (res.trangthai == 0) {
+                        let tr = "";
+                        console.log(res);
+                        $.each(res.data, function (k, v) {
+                            tr += '<tr id="'+v.MaLoai+'">';
+                            tr += '<td>' + v.TenLoai + '</td>'
+                            tr += '<td class="text-right">';
+                            tr += '<a class="btn btn-success btn-circle   edit" data-toggle="modal" data-target="#modalLoaiSP" href="#"><i class="fas fa-edit"></i></a> |'
+                            tr += '<a href="#" class="btn btn-info btn-circle    details" data-toggle="modal" data-target="#modalLoaiSP"><i class="fas fa-info-circle"></i></a> |'
+                            tr += '<a href="#" class="btn btn-danger btn-circle   delete"><i class="fas fa-trash"></i></a>'
+                            tr += '</td>';
+                            tr += '</tr>';
+
+
+                        })
+                        $('#tblDsLoai').html(tr);
+
+                        //phan trang
+                        if (res.soTrang > 1) {
+                            let li = '';
+                            for (i = 1; i <= res.soTrang; i++) {
+
+                                li += '<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>';
+                            }
+                            $('#phanTrang').html(li);
+
+                        }
+
+                    }
+                }
+
+            });
+        }
+
+        //su kien click cua phan trang
+        $('#phanTrang').on('click', 'li', function (e) {
+            e.preventDefault(); // huy href
+            var trang = parseInt($(this).text());
+            LoadDs(trang);
+        });
+
+
+        //Nut Them Moi
+        $("#btnAdd").click(function () {
+            $("#modalTitle").text('Thêm Mới');
+            $('#MaLoaiSP').val(''); // truyen id de biet khi nao dung button submit lam button chinh sua
+
+            //cho chinh sua text
+            $('#TenLoaiSP').prop('readonly', false);
+            //hien thi lai button submit
+            $('#btnSubmit').show();
+        })
+
+
+        //su kien click cua button submit
+        $("#btnSubmit").click(function () {
+            let tenLoaiSP = $('#TenLoaiSP').val().trim();
+            if (tenLoaiSP.length == 0) {
+                alert('Dữ liệu không được để trống !');
+                return;
+            }
+
+            let idLoai = $('#MaLoaiSP').val().trim();
+
+            if (idLoai.length == 0) { //truong hop them moi
+                //dung ajax de them moi
+                $.ajax({
+                    url: '/admin/LoaiSP/Create',
+                    type: 'post',
+                    data: {
+                        tenLoaiSP: tenLoaiSP
+                    },
+                    success: function (data) {
+                        if (data.trangthai == 0) {
+                            alert(data.msg);
+
+                            LoadDs(); // load lai trang sau khi them moi du lieu
+                        }
+                        else {
+                            alert(data.msg);
+
+                        }
+                    }
+
+                })
+            }
+            else {
+                //dung ajax de cap nhat
+                $.ajax({
+                    url: '/admin/LoaiSP/Update',
+                    type: 'post',
+                    data: {
+                        id: idLoai,
+                        tenLoai: tenLoaiSP
+                    },
+                    success: function (data) {
+                        if (data.trangthai == 0) {
+
+                            $('#modalLoaiSP').modal('hide');
+                            alert(data.msg);
+                            LoadDs(); // load lai trang sau khi cap nhat
+                            location.reload();
+                        }
+                        else {
+                            alert(data.msg);
+                        }
+                    }
+
+                })
+
+            }
+        })
+
+
+        //su kien click button details
+        $(document).on('click', '.details', function () {
+
+            //get element id in row table
+            let idLoai = $(this).closest('tr').attr('id'); // this:nut dang click , closest: lay cha la <tr> , attr:thuoc tinh can lay
+
+            $.ajax({
+                url: '/Admin/LoaiSP/details',
+                type: 'get',
+                data: { id: idLoai },
+                success: function (res) {
+                    if (res.trangthai == 0) {
+                        $("#modalTitle").text('Chi Tiết');
+                        ////show thong tin len modal
+                        $('#TenLoaiSP').val(res.data.TenLoai);
+                        //khong cho chinh sua text
+                        $('#TenLoaiSP').prop('readonly', true);
+                        //hide button submit
+                        $('#btnSubmit').hide();
+                    }
+                }
+            })
+        })
+
+         //su kien click button edit
+        $(document).on('click', '.edit', function () {
+            //get element id in row table
+            let idLoai = $(this).closest('tr').attr('id'); // this:nut dang click , closest: lay cha la <tr> , attr:thuoc tinh can lay
+
+            $.ajax({
+                //dung lai ham detail de lay request du lieu do len modal
+                url: '/Admin/LoaiSP/details',
+                type: 'get',
+                data: { id: idLoai },
+                success: function (res) {
+                    if (res.trangthai == 0) {
+
+                        $("#modalTitle").text('Chỉnh Sửa');
+                        ////show thong tin len modal
+                        $('#MaLoaiSP').val(idLoai); // truyen id de biet khi nao dung button submit lam button chinh sua
+
+                        $('#TenLoaiSP').val(res.data.TenLoai);
+                        //cho chinh sua text
+                        $('#TenLoaiSP').prop('readonly', false);
+                        //hien thi lai button submit
+                        $('#btnSubmit').show();
+                    }
+                }
+            })
+        });
+
+        //su kien click button delete
+        $(document).on('click', '.delete', function () {
+            //get element id in row table
+            let idLoai = $(this).closest('tr').attr('id'); // this:nut dang click , closest: lay cha la <tr> , attr:thuoc tinh can lay
+
+            if (confirm("Bạn có chắc chắn muốn xóa ??")) {
+                //dung ajax de xoa
+                $.ajax({
+                    url: '/admin/LoaiSP/Delete',
+                    type: 'post',
+                    data: {
+                        id: idLoai
+                    },
+                    success: function (data) {
+                        if (data.trangthai == 0) {
+                            alert(data.msg);
+                            LoadDs(); // load lai trang sau khi cap nhat
+                        }
+                        else {
+                            alert(data.msg);
+                        }
+                    }
+
+                })
+            }
+
+
+        });
+
+
+
+
+
+    </script>
+
+}

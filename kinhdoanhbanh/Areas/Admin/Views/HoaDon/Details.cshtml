@@ -1,0 +1,40 @@
+﻿@model IEnumerable<kinhdoanhbanh.Models.ChiTietHoaDon>
+
+    @{
+        ViewBag.Title = "Details";
+        Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>Chi Tiết Đơn Hàng</h2>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>
+                    Tên Sản Phẩm
+                </th>
+                <th>
+                    Số Lượng
+                </th>
+                <th>
+                    Đơn Giá
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SanPham.TenSP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SoLuong)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DonGiaBan)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>

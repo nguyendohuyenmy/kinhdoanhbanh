@@ -1,0 +1,159 @@
+﻿@model kinhdoanhbanh.Models.SanPham
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!--Css cua Slide anh-->
+<link href="~/Content/SlideAnh.css" rel="stylesheet" />
+
+
+<!-- single product -->
+<div class="single-product mt-150 mb-150">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5">
+                @*<div class="single-product-img">
+                    <img src="~/Content/Images/@Model.HinhAnh" alt="">
+                        </div>*@
+
+
+
+                <!--Nguồn lấy code slide ảnh https://canxem.com/cach-tao-slideshow-chuyen-anh/ -->
+                <!-- Tao Slide Chuyen Anh San Pham -->
+
+                <div class="display-container">
+                    <img class="mySlides3" src="~/Content/Images/@Model.HinhAnh">
+                    @*<img class="mySlides3" src="https://images.pexels.com/photos/1064136/pexels-photo-1064136.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2">
+                        <img class="mySlides3" src="https://images.pexels.com/photos/5210054/pexels-photo-5210054.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2">*@
+                    <img class="mySlides3" src="~/Content/_Layout/assets/img/BanhLongSon.gif" />
+                    <button class="image-button button-left" onclick="plusDivs(-1)">&#10094;</button>
+                    <button class="image-button button-right" onclick="plusDivs(1)">&#10095;</button>
+
+                    <div class="badge" style="width:100%">
+
+                        <span class="image-badge" onclick="currentDiv(1)"></span>
+                        <span class="image-badge" onclick="currentDiv(2)"></span>
+                        <span class="image-badge" onclick="currentDiv(3)"></span>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="col-md-7">
+                <div class="single-product-content">
+                    <h3>@Model.TenSP</h3>
+                    <p class="single-product-pricing"><span>@Model.DVT</span> @Model.DonGiaBan</p>
+                    <p> @Model.MoTa </p>
+
+                    <div class="single-product-form">
+                        <table>
+                            <tr>
+                                <th>
+                                    <form action="">
+                                        <input id="soluong" name="soluong" type="number" placeholder="1" min="1">
+                                    </form>
+                                </th>
+                                <th>
+
+                                    @if (Model.SoLuong == 0)
+                                    {
+                                        <h3>Sold Out</h3>
+                                        Console.WriteLine("SOld out");
+
+                                    }
+
+
+                                </th>
+                            </tr>
+
+                        </table>
+
+                        <a href="#" onclick="funAddToCard()" class="cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+                        @if (Model.Loai.TenLoai != null)
+                        {
+                            <p><strong> Loại : </strong>@Model.Loai.TenLoai</p>
+                        }
+
+                    </div>
+                    <h4>Share:</h4>
+                    <ul class="product-share">
+                        <li><a href=""><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href=""><i class="fab fa-twitter"></i></a></li>
+                        <li><a href=""><i class="fab fa-google-plus-g"></i></a></li>
+                        <li><a href=""><i class="fab fa-linkedin"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end single product -->
+
+
+<p>
+    @*@Html.ActionLink("Edit", "Edit", new { id = Model.MaSP }) |*@
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+<script>
+    
+    $(document).ready(function () {
+
+    });
+    
+            //ham xu li Them vao gio hang get val() so luong
+            function funAddToCard() {
+
+                let MaSP = @Model.MaSP;
+                let soluong = $('#soluong').val();
+                if (soluong == "") {
+                    soluong = 1;
+
+                }
+
+
+                mode = "get";
+                //debugger;
+
+                var url = '@Html.Raw(Url.Action("AddToCart", "GioHang", new { MaSP = "__MaSP__", soluong = "__soluong__"}))';
+                var params = url.replace('__MaSP__', MaSP).replace('__soluong__', soluong);
+                window.location.href = params;
+            
+        
+
+    }
+
+</script>
+
+
+
+<!--javascripct slide anh-->
+<script>
+    var slideIndex = 1;
+    showDivs(slideIndex);
+
+    function plusDivs(n) {
+        showDivs(slideIndex += n);
+    }
+
+    function currentDiv(n) {
+        showDivs(slideIndex = n);
+    }
+
+    function showDivs(n) {
+        var i;
+        var x = document.getElementsByClassName("mySlides3");
+        var dots = document.getElementsByClassName("image-badge");
+        if (n > x.length) { slideIndex = 1 }
+        if (n < 1) { slideIndex = x.length }
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" badge-white", "");
+        }
+        x[slideIndex - 1].style.display = "block";
+        dots[slideIndex - 1].className += " badge-white";
+    }
+</script>
